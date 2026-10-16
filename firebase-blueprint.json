@@ -1,0 +1,187 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access control.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "role": { "type": "string", "enum": ["student", "institution", "employer", "admin"], "description": "User access role" },
+        "institutionId": { "type": "string", "description": "Associated institution ID for institution or student users" },
+        "studentRegisterNumber": { "type": "string", "description": "Student registration number if role is student" },
+        "organizationName": { "type": "string", "description": "Employer or Institution organization name" },
+        "createdAt": { "type": "string", "description": "Creation ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "Last update ISO timestamp" }
+      },
+      "required": ["email", "displayName", "role", "createdAt"]
+    },
+    "Institution": {
+      "title": "Institution",
+      "description": "Accredited educational institution authorized to issue certificates.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Institution name" },
+        "code": { "type": "string", "description": "Unique institutional code (e.g. ABCEC-6001)" },
+        "contactEmail": { "type": "string", "description": "Contact email" },
+        "website": { "type": "string", "description": "Official institutional website" },
+        "issuerPublicKey": { "type": "string", "description": "Public cryptographic signing key" },
+        "verified": { "type": "boolean", "description": "Accreditation verification status" },
+        "createdAt": { "type": "string", "description": "Registration ISO timestamp" }
+      },
+      "required": ["name", "code", "contactEmail", "verified", "createdAt"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "Universal document registry record supporting academic certificates, experience letters, invoices, agreements, licenses, and official records.",
+      "type": "object",
+      "properties": {
+        "documentId": { "type": "string", "description": "Unique document identifier (e.g. TL-DOC-2026-IT1019)" },
+        "documentType": { "type": "string", "description": "Document category (ACADEMIC_CERTIFICATE, INVOICE, EXPERIENCE_LETTER, AGREEMENT, LICENSE, etc.)" },
+        "title": { "type": "string", "description": "Human readable document title" },
+        "issuer": { "type": "string", "description": "Issuing entity name" },
+        "issuerCode": { "type": "string", "description": "Issuing entity code" },
+        "issuerCategory": { "type": "string", "enum": ["university", "college", "school", "company", "employer", "training_org", "government", "professional_body", "other"] },
+        "recipientName": { "type": "string", "description": "Recipient or subject legal name" },
+        "recipientIdentifier": { "type": "string", "description": "Roll number, Employee ID, Customer ID, Tax ID" },
+        "recipientEmail": { "type": "string", "description": "Recipient contact email" },
+        "issueDate": { "type": "string", "description": "Document issuance date (YYYY-MM-DD)" },
+        "expiryDate": { "type": "string", "description": "Document expiry date if applicable (YYYY-MM-DD)" },
+        "status": { "type": "string", "enum": ["active", "revoked", "expired"], "description": "Registry status" },
+        "source": { "type": "string", "enum": ["TRUSTLINK_NATIVE", "LEGACY_REGISTERED", "EXTERNAL_UNREGISTERED"] },
+        "documentHash": { "type": "string", "description": "Cryptographic SHA-256 hash digest" },
+        "digitalSignature": { "type": "string", "description": "Cryptographic digital signature" },
+        "issuerPublicKey": { "type": "string", "description": "Public verification key" },
+        "qrCodeUrl": { "type": "string", "description": "Data URL of embedded verification QR code" },
+        "documentUrl": { "type": "string", "description": "Storage document URL" },
+        "extractedData": { "type": "object", "description": "Type-specific structured fields" },
+        "issuedBy": { "type": "string", "description": "UID / email of issuer" },
+        "registeredBy": { "type": "string", "description": "UID / email of legacy registrar" },
+        "registrationNotes": { "type": "string", "description": "Registration notes" },
+        "revokedAt": { "type": "string", "description": "Revocation timestamp" },
+        "revokedBy": { "type": "string", "description": "Revoker identity" },
+        "revocationReason": { "type": "string", "description": "Reason for revocation" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["documentId", "documentType", "issuer", "recipientName", "status", "documentHash", "createdAt"]
+    },
+    "ManualReview": {
+      "title": "ManualReview",
+      "description": "Manual verification review case for ambiguous or unregistered documents.",
+      "type": "object",
+      "properties": {
+        "reviewId": { "type": "string", "description": "Unique review request ID" },
+        "documentId": { "type": "string", "description": "Target document ID or reference" },
+        "documentType": { "type": "string", "description": "Detected document type" },
+        "requesterEmail": { "type": "string", "description": "Email of user requesting review" },
+        "requesterRole": { "type": "string", "description": "Role of requester" },
+        "reason": { "type": "string", "description": "Reason for review request" },
+        "status": { "type": "string", "enum": ["PENDING", "IN_REVIEW", "VERIFIED", "REJECTED"], "description": "Review workflow status" },
+        "assignedReviewer": { "type": "string", "description": "Reviewer UID / email" },
+        "reviewerNotes": { "type": "string", "description": "Reviewer findings and notes" },
+        "submittedAt": { "type": "string", "description": "Submission ISO timestamp" },
+        "resolvedAt": { "type": "string", "description": "Resolution ISO timestamp" }
+      },
+      "required": ["reviewId", "documentType", "status", "submittedAt"]
+    },
+    "Certificate": {
+      "title": "Certificate",
+      "description": "Academic degree or diploma certificate record.",
+      "type": "object",
+      "properties": {
+        "certificateId": { "type": "string", "description": "Unique certificate identifier (e.g. TL-2026-IT1019)" },
+        "studentName": { "type": "string", "description": "Student full legal name" },
+        "registerNumber": { "type": "string", "description": "Student university register number" },
+        "studentEmail": { "type": "string", "description": "Student email address for verification linkage" },
+        "institution": { "type": "string", "description": "Issuing institution name" },
+        "institutionCode": { "type": "string", "description": "Issuing institution code" },
+        "course": { "type": "string", "description": "Program/Course of study" },
+        "degree": { "type": "string", "description": "Degree type (e.g. Bachelor of Technology)" },
+        "department": { "type": "string", "description": "Academic department" },
+        "cgpaOrGrade": { "type": "string", "description": "CGPA, GPA, or Class division" },
+        "graduationYear": { "type": "number", "description": "Year of graduation" },
+        "issueDate": { "type": "string", "description": "Certificate issuance date" },
+        "certificateType": { "type": "string", "description": "Degree, Diploma, Transcripts, Certificate of Excellence" },
+        "status": { "type": "string", "enum": ["active", "revoked"], "description": "Status of certificate" },
+        "certificateHash": { "type": "string", "description": "Cryptographic SHA-256 hash digest" },
+        "digitalSignature": { "type": "string", "description": "Cryptographic ECDSA/RSA digital signature" },
+        "issuerPublicKey": { "type": "string", "description": "Public verification key" },
+        "qrCodeUrl": { "type": "string", "description": "Data URL of embedded verification QR code" },
+        "documentUrl": { "type": "string", "description": "Optional storage document URL" },
+        "issuedBy": { "type": "string", "description": "UID of issuer" },
+        "revokedAt": { "type": "string", "description": "Revocation timestamp if revoked" },
+        "revokedBy": { "type": "string", "description": "UID/Name of revoker" },
+        "revocationReason": { "type": "string", "description": "Reason for revocation" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Update timestamp" }
+      },
+      "required": ["certificateId", "studentName", "registerNumber", "institution", "course", "status", "certificateHash", "createdAt"]
+    },
+    "VerificationRecord": {
+      "title": "VerificationRecord",
+      "description": "Log of an executed certificate verification event.",
+      "type": "object",
+      "properties": {
+        "verificationId": { "type": "string", "description": "Unique verification audit ID" },
+        "certificateId": { "type": "string", "description": "Verified certificate ID" },
+        "studentName": { "type": "string", "description": "Student name on document" },
+        "institution": { "type": "string", "description": "Institution name" },
+        "course": { "type": "string", "description": "Course title" },
+        "overallStatus": { "type": "string", "enum": ["VERIFIED", "INVALID", "SUSPICIOUS", "REVOKED", "NOT VERIFIED"], "description": "Verification result" },
+        "genuinenessScore": { "type": "number", "description": "Calculated genuineness percentage" },
+        "verificationMethod": { "type": "string", "description": "Upload, QR Scan, or Manual ID Lookup" },
+        "verifiedByRole": { "type": "string", "description": "Role of verifier (Employer, Institution, Public, Student, Admin)" },
+        "verifierEmail": { "type": "string", "description": "Email of verifier if logged in" },
+        "timestamp": { "type": "string", "description": "Audit event timestamp" }
+      },
+      "required": ["verificationId", "certificateId", "overallStatus", "genuinenessScore", "timestamp"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "System and administrative action audit record.",
+      "type": "object",
+      "properties": {
+        "action": { "type": "string", "description": "Action performed (e.g. ISSUE_CERTIFICATE, REVOKE_CERTIFICATE, USER_LOGIN)" },
+        "entityType": { "type": "string", "description": "Entity category (certificate, user, institution, verification)" },
+        "entityId": { "type": "string", "description": "ID of affected entity" },
+        "actorId": { "type": "string", "description": "UID of actor" },
+        "actorEmail": { "type": "string", "description": "Email of actor" },
+        "actorRole": { "type": "string", "description": "Role of actor" },
+        "details": { "type": "string", "description": "Human-readable action description" },
+        "timestamp": { "type": "string", "description": "Action timestamp" }
+      },
+      "required": ["action", "entityType", "entityId", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "User" },
+      "description": "User profiles with role-based permissions."
+    },
+    "/institutions/{institutionId}": {
+      "schema": { "$ref": "Institution" },
+      "description": "Accredited educational institutions."
+    },
+    "/documents/{documentId}": {
+      "schema": { "$ref": "Document" },
+      "description": "Universal document registry for certificates, experience letters, invoices, agreements, licenses, etc."
+    },
+    "/manual_reviews/{reviewId}": {
+      "schema": { "$ref": "ManualReview" },
+      "description": "Queue for manual verification reviews."
+    },
+    "/certificates/{certificateId}": {
+      "schema": { "$ref": "Certificate" },
+      "description": "Permanent academic certificate registry."
+    },
+    "/verification_history/{verificationId}": {
+      "schema": { "$ref": "VerificationRecord" },
+      "description": "Audit logs of all certificate verification attempts."
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "AuditLog" },
+      "description": "Administrative and institutional action audit trail."
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Copy of TrustLink – Academic Certificate Authenticity Validator",
+  "description": "Secure, AI-powered academic certificate authenticity verification platform with QR code, digital signature, and blockchain verification.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
